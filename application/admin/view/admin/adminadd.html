@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta http-equiv="X-UA-Compatible" content="ie=edge">
+      <title>Document</title>
+    </head>
+    <body>
+      <div style="padding:15px;width:500px;">
+        <form class="layui-form">
+    <div class="layui-form-item">
+      <label class="layui-form-label">账号</label>
+      <div class="layui-input-block">
+        <input type="text" name="admin_name" required   alay-verify="required|checkName" placeholder="请输入名称" autocomplete="off" class="layui-input">
+      </div>
+    </div>
+    <div class="layui-form-item">
+          <label class="layui-form-label">密码</label>
+          <div class="layui-input-block">
+            <input type="password" name="admin_pwd" required alay-verify="required|checkPwd" placeholder="请输入密码" autocomplete="off" class="layui-input">
+          </div>
+        </div>
+      <div class="layui-form-item">
+              <label class="layui-form-label">邮箱</label>
+              <div class="layui-input-block">
+                <input type="text" name="admin_email" required alay-verify="required|email"  placeholder="请输入邮箱" autocomplete="off" class="layui-input">
+              </div>
+          </div>
+      <div class="layui-form-item">
+              <label class="layui-form-label">电话</label>
+              <div class="layui-input-block">
+                  <input type="text" name="admin_tel" required alay-verify="required|phone|number"  placeholder="请输入电话" autocomplete="off" class="layui-input">
+              </div>
+          </div>
+    <div class="layui-form-item">
+      <div class="layui-input-block">
+        <button class="layui-btn" lay-submit lay-filter="*">立即提交</button>
+        <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+      </div>
+    </div>
+  </form>
+  </div>
+    </body>
+    </html>
+<script>
+  $(function(){
+    layui.use(['form','layer'], function(){
+    var form = layui.form;
+    var layer=layui.layer;
+    //验证
+    form.verify({
+    checkName:function(value, item){ //value：表单的值、item：表单的DOM对象
+      var reg=/^[a-z_]\w{3,11}$/i;
+      var font;
+      if(!reg.test(value)){
+        return "账号由数字，字母，下划线组成，非数字开头，并且为4-12位";
+      }else{
+          $.ajax({
+            url:"{:url('Admin/checkName')}",
+            method:"post",
+            data:{admin_name:value,type:1},
+            async:false,
+            success:function(msg){
+              if(msg==0){
+                font='账号已存在';
+              }
+            }
+          });
+           return font;
+         
+      }
+    },
+    checkPwd:function(value, item){ //value：表单的值、item：表单的DOM对象
+      var reg=/^.{6,16}$/;
+      if(!reg.test(value)){
+        return "密码为6-16位";
+      }
+    }, 
+    });
+     //监听提交
+     form.on("submit(*)",function(data){
+       //console.log(data.field);
+         $.post(
+          "{:url('Admin/adminAdd')}",
+          data.field,
+          function(msg){
+             layer.msg(msg.font,{icon:msg.code});
+             if(msg.code==1){
+                  layer.open({
+                    type:1,
+                    content:'是否进入展示页面',
+                    btn:['是','否'],
+                    yes:function(index,layero){
+                      location.href='{:url("Admin/adminShow")}';
+                    },
+                    btn2:function(index,layero){
+                      location.href='{:url("Admin/adminAdd")}';
+                    }
+                  })
+             }
+          },
+          'json'
+       )
+      return false;
+    });
+  });
+  })
+</script>

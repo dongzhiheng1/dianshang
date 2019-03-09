@@ -1,0 +1,54 @@
+<script type="text/javascript" src="__STATIC__/index/js/n_nav.js"></script>
+{include file="public/top"/}
+<div class="i_bg">  
+    <div class="content mar_20">
+    	<img src="__STATIC__/index/images/img3.jpg" />        
+    </div>
+    
+    <!--Begin 第三步：提交订单 Begin -->
+    <div class="content mar_20">
+    	<div class="warning">      	
+            <table border="0" style="width:1000px; text-align:center;" cellspacing="0" cellpadding="0">
+              <tr height="35">
+                <td style="font-size:18px;">
+                	感谢您在本店购物！您的订单已提交成功，请记住您的订单号: <font color="#ff4e00">{$orderInfo.order_number}</font>
+                </td>
+              </tr>
+              {if condition="$orderInfo['pay_type'] eq 1"}
+              <tr>
+                <td style="font-size:14px; font-family:'宋体'; padding:10px 0 20px 0; border-bottom:1px solid #b6b6b6;">
+                	&nbsp; &nbsp;您选定的支付方式为: <font color="#ff4e00">支付宝</font>； &nbsp; &nbsp;您的应付款金额为: <font color="#ff4e00">￥{$orderInfo.order_amount}</font>
+                </td>
+              </tr>
+              <tr>
+                  <td>
+                    <div class="btn_u" style="margin:0 auto; padding:0 20px; width:120px;"><a href="{:url('Order/alipay')}?order_number={$orderInfo.order_number}">立即使用支付宝支付</a></div>
+                  </td>
+              </tr>
+              {elseif condition="$orderInfo['pay_type'] eq 2"}
+              <tr>
+                <td style="font-size:14px; font-family:'宋体'; padding:10px 0 20px 0; border-bottom:1px solid #b6b6b6;">
+                 &nbsp; &nbsp;您选定的支付方式为: <font color="#ff4e00">货到付款</font>； &nbsp; &nbsp;您的应付款金额为: <font color="#ff4e00">￥{$orderInfo.order_amount}</font>
+                </td>
+              </tr>
+              {else/}
+              <tr>
+                <td style="font-size:14px; font-family:'宋体'; padding:10px 0 20px 0; border-bottom:1px solid #b6b6b6;">
+                &nbsp; &nbsp;您选定的支付方式为: <font color="#ff4e00">银行卡支付</font>； &nbsp; &nbsp;您的应付款金额为: <font color="#ff4e00">￥{$orderInfo.order_amount}</font>
+                </td>
+              </tr>
+              <tr>
+                  <td style="padding:20px 0 30px 0; font-family:'宋体';">
+                    银行名称 收款人信息：全称 <font color="red">董志恒</font>；卡号:<font color="red">6222600260001072444</font> ；开户行:<font color="red">工商银行</font> 。 <br />
+                      注意事项：办理电汇时，请在电汇单“汇款用途”一栏处注明您的订单号。
+                  </td>
+              </tr>
+              {/if}
+              <tr>
+                <td>
+                	<a href="#">首页</a> &nbsp; &nbsp; <a href="#">用户中心</a>
+                </td>
+              </tr>
+            </table>        	
+        </div>
+    </div>

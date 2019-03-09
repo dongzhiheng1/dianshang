@@ -1,0 +1,51 @@
+<script type="text/javascript" src="__STATIC__/index/js/n_nav.js"></script>
+{include file="public/membertop"/}
+<!--End Header End-->
+<div class="i_bg bg_color">
+    <!--Begin 用户中心 Begin -->
+    <div class="m_content">
+        {include file="public/memberleft"}
+        <div class="m_right">
+            <div class="mem_tit">我的订单</div>
+            <table border="0" class="order_tab" style="width:930px; text-align:center; margin-bottom:30px;" cellspacing="0" cellpadding="0">
+                <tr>
+                    <td width="20%">商品图片</td>
+                    <td width="20%">商品名称</td>
+                    <td width="25%">商品单价</td>
+                    <td width="15%">购买数量</td>
+                    <td width="15%">总价</td>
+                    <td width="15%">操作</td>
+                </tr>
+                {foreach goodsInfo as $k=>$v}
+                <tr>
+                    <td><font color="#ff4e00"><img src="__ROOT__/goods_img/{$v.goods_img}" width="73" height="73" /></font></td>
+                    <td><font color="#ff4e00"><a href="javascript:;">{$v.goods_name}</a></font></td>
+                    <td><font color="#ff4e00">￥<a href="javascript:;" style="color:#ff4e00">{$v.goods_selfprice}</a></font></td>
+                    <td><font color="#ff4e00"><a href="javascript:;">{$v.buy_number}</a></font></td>
+                    <td><font color="#ff4e00">￥<a href="javascript:;" style="color:#ff4e00">{$v.goods_selfprice*$v.buy_number}</a></font></td>
+                    <td><font color="#ff4e00"><a href="javascript:;" style="color:red;" class="refund" goods_amount="{$v.goods_selfprice*$v.buy_number}" buy_number="{$v.buy_number}" goods_id="{$v.goods_id}" >退款</a></font></td>
+                </tr>
+                {/foreach}
+            </table>
+        </div>
+    </div>
+    <script>
+        $(function(){
+            layui.use("layer",function(){
+                layer=layui.layer;
+                $(".refund").click(function(){
+                    var  _this=$(this);
+                    var goods_amount=_this.attr("goods_amount");
+                    var buy_number=_this.attr("buy_number");
+                    var goods_id=_this.attr("goods_id");
+                   $.post(
+                       "{:url('UserOrder/refund')}",
+                       {goods_amount:goods_amount,buy_number:buy_number,goods_id:goods_id},
+                       function(result){
+                           console.log(result);
+                       }
+                   )
+                })
+            })
+        })
+    </script>

@@ -1,0 +1,26 @@
+<div cate_id="{$info.topData.cate_id}" floor_num="{$floor_num}">
+        <div class="i_t mar_10" >
+            <span class="floor_num">{$floor_num}F</span>
+            <span class="fl">{$info.topData.cate_name}</span>                
+            <span class="i_mores fr">
+                {foreach $info.cateList as $v}
+                <a href="#">{$v.cate_name}</a>
+                {/foreach}
+            </span>
+        </div>
+        <div class="content">
+            <div class="fresh_mid">
+                <ul>
+                    {foreach $info.goodsInfo as $v}
+                    <li>
+                        <div class="name"><a href="#">{$v.goods_name}</a></div>
+                        <div class="price">
+                            <font>￥<span>{$v.goods_selfprice}</span></font>&nbsp; {$v.goods_score}R
+                        </div>
+                        <div class="img"><a href="{:url('Product/product')}?goods_id={$v.goods_id}"><img src="__STATIC__/../goods_img/{$v.goods_img}" width="185" height="155" /></a></div>
+                    </li>
+                    {/foreach}                                                                  
+                </ul>
+            </div>
+        </div> 
+</div> 

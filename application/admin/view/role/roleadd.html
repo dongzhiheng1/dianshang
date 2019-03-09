@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta http-equiv="X-UA-Compatible" content="ie=edge">
+      <title>Document</title>
+    </head>
+    <body>
+      <div style="padding:15px;width:500px;">
+        <form class="layui-form">
+    <div class="layui-form-item">
+      <label class="layui-form-label">角色名称</label>
+      <div class="layui-input-block">
+        <input type="text" name="role_name"   placeholder="请输入名称" autocomplete="off" class="layui-input">
+      </div>
+    </div>
+    <div class="layui-form-item" >
+      <label class="layui-form-label">节点</label>
+       
+        <div class="layui-input-block" >
+          {foreach $data as $v}
+          <fieldset class="layui-elem-field">
+              <legend>
+                <input type="checkbox" title="{$v.node_name}" name="node_id[]" value="{$v.node_id}" lay-skin="primary" class="point" lay-filter="checkAll">
+              </legend>
+              <div class="layui-field-box">
+               {foreach $v['son'] as $keys=>$value}
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" value="{$value.node_id}" name="node_id[]" title="{$value.node_name}" lay-skin="primary" class="son" lay-filter="check">
+               {/foreach}
+              </div>
+            </fieldset> 
+          {/foreach}
+        </div> 
+       
+    </div>
+    <div class="layui-form-item">
+      <div class="layui-input-block">
+        <button class="layui-btn" lay-submit lay-filter="*">立即提交</button>
+        <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+      </div>
+    </div>
+  </form>
+  </div>
+    </body>
+    </html>
+    <script>
+     $(function(){
+      layui.use(['form','layer'], function(){
+      var form = layui.form;
+      var layer=layui.layer;
+      //复选框全选
+      form.on('checkbox(checkAll)', function(data){
+        var _checked=data.elem.checked;
+        var _this=$(data.othis);
+        _son=_this.parent().next().children("input[class='son']");
+        //console.log(_son);
+        if(_checked==true){
+          _son.prop("checked",true)
+        }else{
+          _son.prop("checked",false)
+        }
+        form.render();
+      });
+      //复选框
+      form.on('checkbox(check)', function(data){
+        var _checked=data.elem.checked;
+        var _this=$(data.othis);
+        all=_this.siblings("input");
+        if(_checked==true){
+          _this.parent().prev().find("input").prop("checked",true)
+        }else{
+          num=0;
+          all.each(function(index){
+          box=$(this).prop("checked");
+          //console.log(box);
+          if(box==false){
+            num+=1
+          }
+          if(num==all.length){
+             _this.parent().prev().find("input").prop("checked",false)
+          }
+        })
+        } 
+        form.render();
+      });
+      //表单提交
+      form.on("submit(*)",function(data){
+         $.post(
+            "{:url('Role/roleAdd')}",
+            data.field,
+            function(res){
+              layer.msg(res.font,{icon:res.code});
+                if(res.code==1){
+                  layer.open({
+                    type:1,
+                    content:'是否进入展示页面',
+                    btn:['是','否'],
+                    yes:function(index,layero){
+                        location.href='{:url("Role/roleShow")}';
+                    },
+                    btn2:function(index,layero){
+                        location.href='{:url("Role/roleAdd")}';
+                    }
+                  })
+                }
+            },
+            'json'
+        )
+      return false;
+    });
+      })
+    })
+    </script>
+   

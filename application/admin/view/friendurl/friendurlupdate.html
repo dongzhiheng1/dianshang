@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <div style="padding:15px;width:500px;">
+       <form class="layui-form" action="" >
+         <input type="hidden" name="friend_id" value="{$data.friend_id}" id="friend_id">
+  <div class="layui-form-item">
+    <label class="layui-form-label">友链名称</label>
+    <div class="layui-input-block">
+      <input type="text" name="friend_name" value="{$data.friend_name}"  required  alay-verify="required|checkName" placeholder="请输入友链名称" autocomplete="off" class="layui-input">
+    </div>
+  </div>
+  <div class="layui-form-item">
+        <label class="layui-form-label">友链地址</label>
+        <div class="layui-input-block">
+          <input type="text" name="friend_url"  value="{$data.friend_url}" required  alay-verify="required|url" placeholder="请输入友链地址" autocomplete="off" class="layui-input">
+        </div>
+      </div>
+  <div class="layui-form-item">
+    <div class="layui-input-block">
+      <button class="layui-btn" lay-submit lay-filter="*">立即提交</button>
+      <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+    </div>
+  </div>
+</form> 
+    </div>
+</body>
+</html>
+<script>
+  $(function(){
+    //Demo
+layui.use(['form','layer'], function(){
+  var form = layui.form;
+  var layer=layui.layer;
+  var font;
+
+
+   form.verify({
+    checkName: function(value, item){ //value：表单的值、item：表单的DOM对象
+        //console.log(value)
+        //ajax验证唯一性 
+    $.ajax({
+      url:"{:url('Friendurl/checkName')}",
+      method:'post',
+      data:{friend_name:value,type:2},
+      async:false,
+      success:function(result){
+          //console.log(result);
+          if(result=='0'){
+              font='网址名称已存在'
+          }
+      }
+      })
+      return font;     
+    }
+  }) ; 
+
+  //监听提交
+  form.on('submit(*)', function(data){
+    $.post(
+          "{:url('Friendurl/friendurlUpdate')}",
+          data.field,
+          function(result){
+          //console.log(result) 
+          layer.msg(result.font, {icon:result.code});
+          if(result.code==1){
+              location.href="{:url('Friendurl/friendurlShow')}";
+          }
+        },
+          'json'       
+        ) 
+    return false;
+  });
+
+});
+})
+</script>

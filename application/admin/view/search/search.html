@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src='__STATIC__/jquery-3.2.1.min.js'></script>
+</head>
+<body>
+    <div style="margin-top:25px;margin-left:25px;">
+        <div id='test'>
+            <input type="text"  id="ser" name="ser" style="width:400px;height:36px;">
+            <input type="button"  id= "search" value="百度一下"  style="border:none;background:#0b90ef;color:white;width:100px;height:36px;">
+        </div> 
+        <div id='test_div'>
+            <div class="div" style="width:400px;height:36px;"></div> 
+        </div>
+    </div>
+    
+</body>
+</html>
+<script>
+    $(function(){
+        $("#test_div").hide();
+        $("#search").click(function(){
+            _this=$(this);
+            //id=_this.prev().attr("id");
+            value=_this.prev().val();
+             //console.log(id);
+            $.post(
+                "{:url('search/add')}",
+                {value:value},
+                function(result){
+                   if(result==1){
+                    _this.prev().val();
+                   }
+                }
+            )
+        })
+        $(document).on("click",".div",function(){
+            _this=$(this);
+            value=_this.text();
+            //console.log(value);
+            $("#search").prev().val(value);
+
+        })
+        $(document).on('keyup click',"#ser",function(){
+            _this=$(this);
+            //console.log(_this)
+            value=_this.val();
+            $.post(
+                "{:url('search/search')}",
+                {value:value},
+                function(msg){
+                    str="";
+                    $.each(msg.arr,function(i,v){
+                         str+= 
+                    "<div class='div' style='width:400px;height:36px;'>"+v.value+"</div>"
+                    })
+                    
+                $("#test_div").html(str);
+                },
+
+                'json'
+            )
+            $('#test_div').show();
+        })
+       /*  $("#ser").blur(function(){
+            $("#test_div").hide();
+        })
+  */
+    })
+</script>

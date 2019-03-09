@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+    <div class="layui-side layui-bg-black">
+        <div class="layui-side-scroll">
+          <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+          {volist name="Info"  id="v"}
+          <ul class="layui-nav layui-nav-tree" lay-filter="test">
+            <li class="layui-nav-item ">
+              <a class="" href="javascript:;">{$v.node_name}</a>
+              {volist name="$v['son']"  id="vv"}
+              <dl class="layui-nav-child">
+                <dd><a href='{:url("$vv[controller_name]/$vv[action_name]")}'>{$vv.node_name}</a></dd>
+              </dl>
+              {/volist}
+            </li>
+          </ul>
+          {/volist}
+        </div>
+      </div>
+</body>
+</html>

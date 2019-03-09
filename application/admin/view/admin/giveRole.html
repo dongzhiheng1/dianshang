@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta http-equiv="X-UA-Compatible" content="ie=edge">
+      <title>Document</title>
+    </head>
+    <body>
+      <div style="padding:15px;width:500px;">
+        <form class="layui-form">
+          <input type="hidden" name="admin_id" value="{$admin_id}">
+      <div class="layui-form-item">
+              <label class="layui-form-label">赋予角色</label>
+              <div class="layui-input-block">
+                  {foreach $roleInfo as $k=>$v}
+                    <input type="checkbox" title="{$v.role_name}" name="role_id[]" value="{$v.role_id}" lay-skin="primary" {in name="$v['role_id']" value="$selectRoleId"}checked{/in}>
+                  {/foreach}
+              </div>
+          </div>
+    <div class="layui-form-item">
+      <div class="layui-input-block">
+        <button class="layui-btn" lay-submit lay-filter="*">立即提交</button>
+        <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+      </div>
+    </div>
+  </form>
+  </div>
+    </body>
+    </html>
+<script>
+    $(function(){
+        layui.use(['layer','form'],function(){
+            layer=layui.layer;
+            form=layui.form;
+            //监听提交
+            form.on("submit(*)",function(data){
+                $.post(
+                  "{:url('Admin/giveRole')}",
+                  data.field,
+                  function(result){
+                    layer.msg(result.font,{icon:result.code});
+                    if(result.code==1){
+                       location.href="{:url('Admin/adminShow')}";
+                    }
+                  },
+                  'json'
+              )
+              return false;
+            });
+        })
+    })
+</script>

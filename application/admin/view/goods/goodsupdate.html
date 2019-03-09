@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <div style="padding:15px;width:500px;">
+       <form class="layui-form"  >
+         <input type="hidden" name="goods_id" value="{$data.goods_id}" >
+  <div class="layui-form-item">
+    <label class="layui-form-label">商品名称</label>
+    <div class="layui-input-block">
+      <input type="text" name="goods_name" value="{$data.goods_name}" required  alay-verify="required" placeholder="请输入商品名称" autocomplete="off" class="layui-input">
+    </div>
+  </div>
+  <div class="layui-form-item">
+        <label class="layui-form-label">本店价格</label>
+        <div class="layui-input-block">
+          <input type="text" name="goods_selfprice" value="{$data.goods_selfprice}"  required  alay-verify="required" placeholder="请输入本店价格" autocomplete="off" class="layui-input">
+        </div>
+      </div>
+    <div class="layui-form-item">
+            <label class="layui-form-label">市场价格</label>
+            <div class="layui-input-block">
+              <input type="text" name="goods_marketprice" value="{$data.goods_marketprice}"  required  alay-verify="required" placeholder="请输入市场价格" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+    <div class="layui-form-item">
+                <label class="layui-form-label">是否上架</label>
+        <div class="layui-input-block">
+                  <input type="radio" name="goods_up" value="1" title="是" {if condition="$data['goods_up'] eq 1"}checked{/if}>
+                  <input type="radio" name="goods_up" value="0" title="否" {if condition="$data['goods_up'] eq 0"}checked{/if}>
+                </div>
+            </div>
+    <div class="layui-form-item">
+    <label class="layui-form-label">选择</label>
+        <div class="layui-input-block">
+        <input type="checkbox" name="goods_new"  value="1" title="新品" {if condition="$data['goods_new'] eq 1"}checked{/if}>
+        <input type="checkbox" name="goods_best" value="1" title="精品" {if condition="$data['goods_best'] eq 1"}checked{/if}>
+        <input type="checkbox" name="goods_hot" value="1" title="热卖"  {if condition="$data['goods_hot'] eq 1"}checked{/if}>
+    </div>
+    </div>
+    <div class="layui-form-item">
+            <label class="layui-form-label">库存</label>
+            <div class="layui-input-block">
+                <input type="text" name="goods_num"  value="{$data.goods_num}" required  alay-verify="required" placeholder="请输入商品库存" autocomplete="off" class="layui-input">
+            </div>
+    </div>
+    <div class="layui-form-item">
+            <label class="layui-form-label">赠送积分</label>
+            <div class="layui-input-block">
+                <input type="text" name="goods_score"  value="{$data.goods_score}" required  alay-verify="required" placeholder="请输入赠送积分" autocomplete="off" class="layui-input">
+            </div>
+    </div>
+    <div class="layui-form-item" >
+        <label class="layui-form-label">商品分类</label>
+        <div class="layui-input-block">
+          <select name="cate_id" alay-verify="required"><option value="0">请选择</option>{foreach $cateInfo as $v}<option value="{$v.cate_id}" {if condition="$data['cate_id'] eq $v['cate_id']"}selected{/if}>{:str_repeat("&nbsp;&nbsp;",$v['level']*2)}{$v.cate_name}</option> {/foreach}</select>      
+        </div>
+    </div>
+    <div class="layui-form-item" >
+        <label class="layui-form-label">商品品牌</label>
+        <div class="layui-input-block">
+          <select name="brand_id" alay-verify="required"><option value="0">请选择</option>{foreach $brandInfo as $v}<option value="{$v.brand_id}" {if condition="$data['brand_id'] eq $v['brand_id']"}selected {/if}>{$v.brand_name}</option>{/foreach}</select>      
+        </div>
+  </div>
+    <div class="layui-form-item">
+            <div class="layui-input-block">
+              <button class="layui-btn" lay-submit lay-filter="*">立即提交</button>
+              <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+    </div>
+</form> 
+    </div>
+</body>
+</html>
+<script>
+//Demo
+layui.use(['form','layer'], function(){
+  var form = layui.form;
+  var layer=layui.layer;
+            
+  //监听提交
+  form.on('submit(*)', function(data){
+    $.post(
+        "{:url('Goods/goodsUpdate')}",
+        data.field,
+        function(resu){
+          layer.msg(resu.font,{icon:resu.code})
+          if(resu.code==1){
+              location.href="{:url('Goods/goodsshow')}";
+          }
+        },
+        'json'
+
+    )
+    return false;
+  });
+});
+</script>

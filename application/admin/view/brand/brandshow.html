@@ -1,0 +1,72 @@
+<div style="padding:15px;width:965px">
+        <table id="demo" lay-filter='table_edit'></table>
+    </div>
+    <script>
+      $(function(){
+        layui.use(['table','layer'],function(){
+        var table=layui.table;
+        var layer=layui.layer;
+        //展示
+        table.render({
+        elem: '#demo'
+        ,url: '{:url("Brand/BrandList")}'
+        ,page:true
+        ,limit:4
+        ,limits:[1,2,3,4,5,6,7,8,9]
+        ,cols: [[ 
+          {field: 'brand_id', title: 'ID', width:50, sort: true, fixed: 'left'}
+          ,{field: 'brand_name', title: '品牌名称', width:100,edit:'text'}
+          ,{field: 'brand_url', title: '品牌网址', width:150, sort: true,edit:'text'}
+          ,{field: 'brand_describe', title: '描述', width:180,edit:'text'}
+          ,{field: 'brand_show', title: '是否展示', width:180}
+          ,{field: 'create_time', title: '时间', width:180}
+          ,{field: 'right', title: '操作',toolbar:'#barDemo' ,width:120,edit:'text'}  
+          ]]
+        });
+        //即点即改
+      table.on('edit(table_edit)',function(obj){
+          var value=obj.value;
+          var field=obj.field; 
+          var brand_id=obj.data.brand_id;
+        $.post(
+            "{:url('Brand/brandFileUpdate')}",
+            {value:value,field:field,brand_id:brand_id},
+            function(msg){
+                  layer.msg(msg.font,{icon:msg.code});
+                  if(msg.code==2){
+                    table.reload('demo');
+                  }
+                  },
+                  'json'
+                )
+              })
+      //删除
+        table.on('tool(table_edit)',function(obj){
+        var data=obj.data;
+          if(obj.event==='del'){
+            layer.confirm('是否确认删除?',{icon:3},function(index){
+              $.post(
+                  "{:url('Brand/brandDel')}",
+                  {brand_id:data.brand_id},
+                  function(msg){ 
+                    layer.msg(msg.font,{icon:msg.code});
+                      if(msg.code==1){
+                        table.reload('demo');
+                        }
+                      },
+                      'json'
+                    )
+                  });
+                }else if(obj.event==='edit'){
+                    location.href="{:url('Brand/brandUpdate')}?brand_id="+data.brand_id;
+                }
+              })  
+    
+            });
+          })
+    </script>
+    <script type='text/html' id='barDemo'>
+      <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+      <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+    </script>
+    

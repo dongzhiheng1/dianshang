@@ -1,0 +1,70 @@
+<div style="padding:15px;width:600px">
+        <table id="demo" lay-filter='table_edit'></table>
+    </div>
+    <script>
+      $(function(){
+        layui.use(['table','layer'],function(){
+        var table=layui.table;
+        var layer=layui.layer;
+        //展示
+        table.render({
+        elem: '#demo'
+        ,url: '{:url("Friendurl/friendurlList")}'
+        ,page:true
+        ,limit:4
+        ,limits:[1,2,3,4,5,6,7,8,9]
+        ,cols: [[ 
+          {field: 'friend_id', title: 'ID', width:50, sort: true, fixed: 'left'}
+          ,{field: 'friend_name', title: '友链名称', width:100,edit:'text'}
+          ,{field: 'friend_url', title: '友链网址', width:150, sort: true,edit:'text'}
+          ,{field: 'create_time', title: '时间', width:180}
+          ,{field: 'right', title: '操作',toolbar:'#barDemo' ,width:120,edit:'text'}  
+          ]]
+        });
+        //即点即改
+      table.on('edit(table_edit)',function(obj){
+          var value=obj.value;
+          var field=obj.field; 
+          var friend_id=obj.data.friend_id;
+        $.post(
+            "{:url('Friendurl/friendurlFileUpdate')}",
+            {value:value,field:field,friend_id:friend_id},
+            function(msg){
+                  layer.msg(msg.font,{icon:msg.code});
+                  if(msg.code==2){
+                    table.reload('demo');
+                  }
+                  },
+                  'json'
+                )
+              })
+      //删除
+        table.on('tool(table_edit)',function(obj){
+        var data=obj.data;
+          if(obj.event==='del'){
+            layer.confirm('是否确认删除?',{icon:3},function(index){
+              $.post(
+                  "{:url('Friendurl/friendurlDel')}",
+                  {friend_id:data.friend_id},
+                  function(msg){ 
+                    layer.msg(msg.font,{icon:msg.code});
+                      if(msg.code==1){
+                        table.reload('demo');
+                        }
+                      },
+                      'json'
+                    )
+                  });
+                }else if(obj.event==='edit'){
+                    location.href="{:url('Friendurl/friendurlUpdate')}?friend_id="+data.friend_id;
+                }
+              })  
+    
+            });
+          })
+    </script>
+    <script type='text/html' id='barDemo'>
+      <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+      <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+    </script>
+    

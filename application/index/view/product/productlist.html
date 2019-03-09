@@ -1,0 +1,236 @@
+<script type="text/javascript" src="__STATIC__/index/js/n_nav.js"></script>
+<!--Begin Header Begin-->
+{include file='public/top'/}
+<!--End Menu End--> 
+<div class="i_bg">
+	<div class="postion">
+        {if condition="$catInfo['cate_id'] eq 0"}
+        <span class="fl">全部商品</span>
+        {else/}
+        <span class="fl">全部商品><a href="{:url('Product/productList')}?cate_id={$catInfo['cate_id']}">{$catInfo.cate_name}</a></span>
+        {/if}
+        <span class="n_ch"  style="display:none" id="brand">
+            <span class="fl">品牌:<font></font></span>
+            <a href="javascript:;"><img src="__STATIC__/index/images/s_close.gif" class="move"></a>
+        </span>
+        <span class="n_ch" style="display:none" id="price">
+            <span class="fl">价格:<font ></font></span>
+            <a href="javascript:;"><img src="__STATIC__/index/images/s_close.gif" class="move"></a>
+        </span>
+    </div>
+    <!--Begin 筛选条件 Begin-->
+    <div class="content mar_10">
+    	<table border="0" class="choice" style="width:100%; font-family:'宋体'; margin:0 auto;" cellspacing="0" cellpadding="0">
+          <tr valign="top">
+            <td width="70">&nbsp; 品牌：</td>
+            <td class="td_a brand">
+                {foreach $brandInfo as $v}
+                <a href="javascript:;" class="brand_select" brand_id="{$v.brand_id}">{$v.brand_name}</a>
+                {/foreach}
+          </tr>
+          <tr valign="top">
+            <td>&nbsp; 价格：</td>                                                                                                       
+            <td class="td_a price" id="price_select">
+                {foreach $priceInfo as $v}
+                <a href="javascript:;"  class="price_select" >{$v}</a>
+                {/foreach}
+          </tr>                                                                                                      
+        </table>                                                                                 
+    </div>
+    <!--End 筛选条件 End-->
+    
+    <div class="content mar_20">
+    	<div class="l_history">
+        	<div class="his_t">
+            	<span class="fl">浏览历史</span>
+                <span class="fr"><a href="#">清空</a></span>
+            </div>
+        	<ul>
+                {if condition="$goodsHistory neq '' "}
+                {foreach $goodsHistory as $v}
+            	<li>
+                    <div class="img"><a href="{:url('Product/product')}?goods_id={$v.goods_id}"><img src="__ROOT__/goods_img/{$v.goods_img}" width="185" height="162" /></a></div>
+                	<div class="name"><a href="#">{$v.goods_name}</a></div>
+                    <div class="price">
+                    	<font>￥<span>{$v.goods_selfprice}</span></font> &nbsp;{$v.goods_score}R
+                    </div>
+                </li>
+                {/foreach}
+                {/if}
+        	</ul>
+        </div>
+        <div class="l_list" >
+        	<div class="list_t">
+            	<span class="fl list_or" id="test">
+                	<a href="#" class="type now" flag="1">默认</a>
+                    <a href="#" class="type" flag="2">
+                    	<span class="fl">销量</span>                        
+                        <span  order="desc">↓</span>                                                  
+                    </a>
+                    <a href="#"  class="type" flag="3">
+                    	<span class="fl">价格</span>                        
+                        <span  order="asc">↑</span>
+                    </a>
+                    <a href="#" class="type" flag="4">新品</a>
+                </span>
+                <span class="fr" id="count">共发现{$count}件商品</span>
+            </div>
+            <div class="list_c" id="show">
+                <ul class="cate_list">
+                    {foreach $goodsInfo as $v}
+                	<li>
+                    	<div class="img"><a href="{:url('Product/product')}?goods_id={$v.goods_id}"><img src="__ROOT__/goods_img/{$v.goods_img}" width="210" height="185" /></a></div>
+                        <div class="price">
+                            <font>￥<span>{$v.goods_selfprice}</span></font> &nbsp; {$v.goods_score}R
+                        </div>
+                        <div class="name"><a href="#">{$v.goods_name}</a> &nbsp; 月销量:<a href="#" style="color:orange">{$v.sale_num}件</a></div>
+                        <div class="carbg">
+                        	<a href="javascript:;" class="ss collect" id={$v.goods_id}>收藏</a>
+                            <a href="#" class="j_car">加入购物车</a>
+                        </div>
+                    </li>
+                    {/foreach}
+                </ul>
+                <div class="pages">
+                	{$page_str}
+                </div>
+            </div>
+        </div>
+    </div>
+<script>
+    $(function(){
+        layui.use('layer',function(){
+        var layer=layui.layer;
+        //点击品牌
+        $(document).on("click",".brand_select",function(){
+        var  _this=$(this);
+        var brand=_this.text();
+        $("#brand").find("font").text(brand); 
+        _price=$(".price_select").text(""); 
+        $("#price").css("display","none");
+        $("#brand").css("display","block");
+        //console.log(_price)
+       
+        
+        _this.addClass("now");
+        _this.siblings("a").removeClass("now");
+            var brand_id=$(".brand").find("a[class='brand_select now']").attr("brand_id");
+            $.post(
+                "{:url('Product/getPrice')}",
+                {brand_id:brand_id},
+                function(result){
+                   if(result==2){
+                    alert("1");
+                   }else{
+                     var _a="";
+                     for(var i in result){
+                         _a+="<a href='javascript:;' class='price_select'>"+result[i]+"</a>"
+                     };
+                     $("#price_select").html(_a);
+                   }
+                },
+                'json'
+            )
+            getGoodInfo(1)
+
+       
+
+        //点击价格   
+        })
+        $(document).on("click",".price_select",function(){
+        var _this=$(this);
+        var price=_this.text();
+        $("#price").find("font").text(price);
+        $("#price").css("display","block");
+        _this.addClass("now");
+        _this.siblings("a").removeClass("now");
+        getGoodInfo(1)
+        })
+        
+        //点击排序
+        $(document).on("click",".type",function(){
+            _this=$(this);
+            _this.addClass("now");
+            _this.siblings("a").removeClass("now")
+           
+            
+            //升降序变值
+            var flag=$("#test").find("a[class='type now']").attr("flag");
+            var test=$("#test").find("a[class='type now']").find("span[order]");
+            if(flag==2||flag==3){
+                var order=test.attr("order");
+                if(order=="desc"){
+                    test.attr("order","asc");
+                    test.text("↑");
+                }else{
+                    test.attr("order","desc");
+                    test.text("↓");
+                }
+            }
+            getGoodInfo(1);
+            //重新获取数据
+
+        })
+        //点击分页超链接
+        $(document).on("click",".page",function(){
+            //获取商品数据
+            _this=$(this);
+            var p=_this.attr("p");
+            getGoodInfo(p);
+
+        })
+        //获取商品数据
+        function getGoodInfo(p=1){
+        //条件
+        //console.log(p)
+        var brand_id=$(".brand").find("a[class='brand_select now']").attr("brand_id");
+        var price=$(".price").find("a[class='price_select now']").text();
+        var flag=$("#test").find("a[class='type now']").attr("flag");
+        var order=$("#test").find("a[class='type now']").find("span[order]").attr("order");
+        //console.log(flag);
+            //页码 获取商品信息
+            $.post(
+                "{:url('Product/productSearch')}",
+                {p:p,brand_id:brand_id,price:price,flag:flag,order:order},
+                function(res){
+                    //console.log(res);
+                   $("#show").html(res);
+                   count=$(".count").val();
+                   //console.log(count);
+                   $("#count").html("共发现"+count+"件商品")  
+                }
+            )
+        }
+        
+        //点击图片移除
+        $(document).on("click",".move",function(){
+            var _this=$(this);
+            _this.parents("span[class='n_ch']").css("display","none");
+            id=_this.parents("span[class='n_ch']").prop("id");
+            $("."+id+"_select").removeClass("now")
+            getGoodInfo(1)
+            //console.log(_this);
+
+        })
+
+    //点击收藏 显示已收藏
+        $(".collect").click(function(){
+            _this=$(this);
+            collect=_this.html();
+            goods_id=_this.attr("id");
+           $.post(
+               "{:url('Product/productCollect')}",
+               {goods_id:goods_id},
+               function(result){
+                layer.msg(result.font,{icon:result.code});
+                if(result.code==2){
+                    location.href="{:url('login/login')}";
+                }
+               },
+               'json'
+           )
+        })
+        })
+    })
+</script>
+    

@@ -1,0 +1,100 @@
+<div style="padding:15px;width:1050px">
+        商品
+          <input type="text" id="goods_name" required  placeholder="请输入商品名称" >
+            分类
+          <select id="cate_name" ><option value="">请选择</option>{foreach $cateInfo as $v}<option value="{$v.cate_name}">{:str_repeat("&nbsp;&nbsp;",$v['level']*2)}{$v.cate_name}</option> {/foreach}</select>
+          品牌
+            <select id="brand_name" ><option value="">请选择</option>{foreach $brandInfo as $v}<option value="{$v.brand_name}">{$v.brand_name}</option>{/foreach}</select>
+            <input type="button" value="搜索" id="search">
+
+    <table id="demo" lay-filter='table_edit'></table>
+</div>
+<script>
+$(function(){
+    layui.use(['table','layer'],function(){
+    var table=layui.table;
+    var layer=layui.layer;
+    //加载表格
+    table.render({
+    elem: '#demo'
+    ,url: '{:url("Goods/goodsList")}'
+    ,page:true
+    ,limit:4
+    ,limits:[1,2,3,4,5,6,7,8,9]
+    ,cols: [[ 
+        {field: 'goods_id', title: 'ID', width:50, sort: true, fixed: 'left'}
+        ,{field: 'goods_name', title: '商品名称', width:100,edit:'text'}
+        ,{field: 'goods_selfprice', title: '本店价格', width:150, sort: true,edit:'text'}
+        ,{field: 'goods_marketprice', title: '市场价格', width:180,edit:'text'}
+        ,{field: 'goods_up', title: '是否上架',width:120}
+        ,{field: 'goods_new', title: '新品',width:120}  
+        ,{field: 'goods_best', title: '精品',width:120} 
+        ,{field: 'goods_hot', title: '热卖',width:120} 
+        ,{field: 'goods_num', title: '库存',width:120,edit:'text'} 
+        ,{field: 'goods_score', title: '增送积分',width:120,edit:'text'} 
+        ,{field: 'cate_name', title: '商品分类',width:120}
+        ,{field: 'brand_name', title: '商品品牌',width:120}
+        ,{field: 'create_time', title: '添加时间',width:120}
+        ,{field: 'right', title: '操作',toolbar:'#barDemo' ,width:120,edit:'text'}   
+        ]]
+    });
+    
+    //搜索
+    $("#search").click(function(){
+        var goods_name=$("#goods_name").val();
+        var brand_name=$("#brand_name").val();
+        var cate_name=$("#cate_name").val();
+        table.reload("demo",{
+            where:{goods_name:goods_name,brand_name:brand_name,cate_name:cate_name}
+        });
+    });
+
+    //即点即改
+    table.on('edit(table_edit)',function(obj){
+        var field=obj.field;
+        var value=obj.value;
+        var goods_id=obj.data.goods_id;
+
+        //即点即改
+        $.post(
+            "{:url('Goods/goodsFileUpdate')}",
+            {field:field,value:value,goods_id:goods_id},
+            function(res){
+               layer.msg(res.font,{icon:res.code})
+               if(res.code==2){
+                    table.reload('demo');
+                    }
+            },
+            'json'
+        )  
+    })
+    //删除
+    table.on('tool(table_edit)',function(obj){
+        var data=obj.data;
+            if(obj.event==='del'){
+            layer.confirm('是否确认删除?',{icon:3},function(index){
+            $.post(
+                "{:url('Goods/goodsDel')}",
+                {goods_id:data.goods_id},
+                function(res){ 
+                layer.msg(res.font,{icon:res.code});
+                    if(res.code==1){
+                    table.reload('demo');
+                    }
+                },
+                'json'
+                )
+                });
+            }else if(obj.event==='edit'){
+                location.href="{:url('Goods/goodsUpdate')}?goods_id="+data.goods_id;
+            }
+    })
+
+    });
+    })
+</script>
+<script type='text/html' id='barDemo'>
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+    

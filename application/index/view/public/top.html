@@ -1,0 +1,114 @@
+<!-- 顶部 -->
+<div class="top">
+        <div class="logo"><a href="{:url('Index/index')}"><img src="__STATIC__/index/images/logo.gif" /></a></div>
+        <div class="search">
+            <form>
+                <input type="text" value="" class="s_ipt" />
+                <input type="submit" value="搜索" class="s_btn" />
+            </form>                      
+            <span class="fl"><a href="#">咖啡</a><a href="#">iphone 6S</a><a href="#">新鲜美食</a><a href="#">蛋糕</a><a href="#">日用品</a><a href="#">连衣裙</a></span>
+        </div>
+        <div class="i_car">
+            <div class="car_t" id="car">购物车 [ <span id="number"></span> ]</div>
+            <div class="car_bg">
+                <!--Begin 购物车未登录 Begin-->
+                {if condition="!session('?userInfo')"}
+                <div class="un_login">还未登录！<a href="{:url('Login/login')}" style="color:#ff4e00;">马上登录</a> 查看购物车！</div>
+                {/if}
+                <!--End 购物车未登录 End-->
+                <!--Begin 购物车已登录 Begin-->
+                {if condition="$is_cartInfo eq 1 "}
+                <div>
+                    <ul class="cars" style="height:200px;overflow-y:auto">
+                    {foreach $cartInfo as $v}
+                    <li>
+                        <div class="img"><a href="#"><img src="__ROOT__/goods_img/{$v.goods_img}" width="58" height="58" /></a></div>
+                        <div class="name"><a href="#">{$v.goods_name}</a></div>
+                        <div class="prices"><input type="hidden" subtotal="{$v.goods_selfprice*$v.buy_number}"><font color="#ff4e00">￥{$v.goods_selfprice}</font>X{$v.buy_number}</div>
+                    </li>
+                    {/foreach}
+                </ul> 
+                </div>
+                {/if}
+                <div class="price_sum">共计&nbsp; <font color="#ff4e00">￥</font><span id="allprice">0</span></div>
+                <div class="price_a"><a href="{:url('Cart/buyCar')}">去购物车结算</a></div>
+                <!--End 购物车已登录 End-->
+               
+            </div>
+        </div>
+</div>
+<!-- 左部 -->
+<div class="menu_bg">
+        <div class="menu">
+            <!--Begin 商品分类详情 Begin-->    
+            <div class="nav">
+                <div class="nav_t">全部商品分类</div>
+                <?php if(request()->controller()=='Index'){
+                        $flag="leftNav";
+                }else{
+                        $flag="leftNav none";
+                }
+                ?>
+                <div class="{$flag}">
+                    <ul> 
+                        {volist name='cateInfo' id='v'}
+                        <li>
+                            <div class="fj">
+                                <span class="n_img"><span></span></span>
+                                <span class="fl">{$v.cate_name}</span>
+                            </div>
+                                {assign name="a" value="$key*40"/}
+                            <div class="zj" style="top:-{$a}px">
+                                <div class="zj_l">
+                                    {foreach $v['son'] as $val}
+                                    <div class="zj_l_c">
+                                        <h2>{$val.cate_name}</h2>
+                                        {foreach $val['son'] as $value}
+                                        <a href="#">{$value.cate_name}</a>|
+                                        {/foreach}
+                                    </div>
+                                    {/foreach}
+                                </div>
+                                <div class="zj_r">
+                                    <a href="#"><img src="__STATIC__/index/images/n_img1.jpg" alt=""></a>
+                                    <a href="#"><img src="__STATIC__/index/images/n_img2.jpg" alt=""></a>
+                                </div>
+                            </div>
+                        </li> 
+                         {/volist}            	
+                    </ul>            
+                </div>
+            </div>  
+            <!--End 商品分类详情 End-->                                                     
+            <ul class="menu_r" id="p">
+                <li><a href="{:url('Index/index')}" >首页</a></li>
+                <li><a href="{:url('Product/ProductList')}">全部商品</a></li>
+                {foreach $cateInfo as $v}                                                                                                                                              
+                <li><a href="{:url('Product/ProductList')}?cate_id={$v.cate_id}">{$v.cate_name}</a></li>
+                {/foreach}
+            </ul>
+            <div class="m_ad">中秋送好礼！</div>
+        </div>
+    </div>
+<script>
+   $(function(){
+       //购物车点击
+        $(document).on("click","#car",function(){
+            location.href="{:url('Cart/buyCar')}";
+        })
+        var is_cartInfo="{$is_cartInfo}";
+        if(is_cartInfo==1){
+            //计算总价
+            total=0;
+            num=$(".prices").length;
+           $(".prices").each(function(index){
+               var goods_selfprice=parseInt($(this).find("input").attr("subtotal"));
+               total+=goods_selfprice;
+            })
+            $("#allprice").text(total);
+            $("#number").text(num);
+        }else{
+            $("#number").text(0);
+        }
+    })
+</script>

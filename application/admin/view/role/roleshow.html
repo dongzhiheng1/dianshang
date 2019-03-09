@@ -1,0 +1,49 @@
+<table class="layui-table" style="width:900px;margin-left:20px;">
+    <thead>
+    <tr>
+        <td>角色id</td>
+        <td>角色名称</td>
+        <td>操作</td>
+    </tr>
+    </thead>
+    <tbody>
+    {foreach $roleInfo as $k=>$v}
+    <tr class="delAll">
+        <td>
+            <span class="span_test">{$v.role_id}</span>
+        </td>
+        <td>
+            <span class="span_test">{$v.role_name}</span>
+        </td>
+        <td role_id="{$v.role_id}">
+            <a href="javascript:;" class="del">删除</a>
+            <a href="{:url('Role/roleUpdate')}?role_id={$v.role_id}">修改</a>
+        </td>
+    </tr>
+    {/foreach}
+    </tbody>
+</table>
+<script>
+    $(function(){
+        layui.use(['layer'],function(){
+            var  layer=layui.layer;
+            $(".del").click(function(){
+               var  _this=$(this);
+               var  role_id=_this.parent("td").attr("role_id");
+               $.post(
+                   "{:url('Role/roleDel')}",
+                   {role_id:role_id},
+                   function(result){
+                    layer.msg(result.font,{icon:result.code});
+                        if(result.code==1){
+                            _this.parents("tr[class='delAll']").remove();   
+                        }
+                   },
+                   'json'
+               )
+            })
+        })
+    })
+</script>
+
+

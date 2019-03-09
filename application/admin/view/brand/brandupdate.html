@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<div style="padding: 15px; width:600px" width="600px">
+<form class="layui-form" action="">
+    <input type="hidden" name="brand_id" value="{$data.brand_id}">
+    <div class="layui-form-item">
+    <label class="layui-form-label">品牌名称</label>
+    <div class="layui-input-block">
+        <input type="text" name="brand_name" value="{$data.brand_name}" required  alay-verify="required|checkName" placeholder="请输入标题" autocomplete="off" class="layui-input">
+    </div>
+    </div>
+    <div class="layui-form-item">
+    <label class="layui-form-label">网址</label>
+    <div class="layui-input-block">
+        <input type="text" name="brand_url" value="{$data.brand_url}" required  alay-verify="required" placeholder="请输入标题" autocomplete="off" class="layui-input">
+    </div>
+    </div>
+    <div class="layui-form-item">
+    <label class="layui-form-label">是否展示</label>
+    <div class="layui-input-block">
+        <input type="radio" name="brand_show" value="1" title="是"{if condition="$data['brand_show'] eq 1"}checked{/if}>
+        <input type="radio" name="brand_show" value="0" title="否" {if condition="$data['brand_show'] eq 0"}checked{/if}>
+    </div>
+    </div>
+    <div class="layui-form-item layui-form-text">
+    <label class="layui-form-label">描述</label>
+    <div class="layui-input-block">
+        <textarea name="brand_describe" placeholder="请输入内容" class="layui-textarea">{$data.brand_describe}</textarea>
+    </div>
+    </div>
+    <div class="layui-form-item">
+    <div class="layui-input-block">
+        <button class="layui-btn" lay-submit lay-filter="*">立即提交</button>
+        <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+    </div>
+    </div>
+</form>
+</div>
+</body>
+</html>
+<script>
+$(function(){
+layui.use(['form','layer','upload'],function(){
+var form=layui.form
+var layer=layui.layer
+var upload=layui.upload
+var font;
+//验证
+form.verify({
+checkName: function(value, item){ //value：表单的值、item：表单的DOM对象
+    //console.log(value)
+    //ajax验证唯一性 
+$.ajax({
+        url:"{:url('Brand/checkName')}",
+        method:'post',
+        data:{brand_name:value,type:2},
+        async:false,
+        success:function(result){
+            //console.log(result);
+            if(result=='0'){
+                font='品牌名称已存在'
+            } 
+        }
+        })
+        return font;      
+}
+}) ; 
+$(function(){
+    //表单监听提交
+ form.on("submit(*)",function(data){
+       //console.log(data);
+        $.post(
+            "{:url('Brand/brandUpdate')}",
+            data.field,
+            function(res){
+                 //console.log(msg)
+              layer.msg(res.font,{icon:res.code});
+              if(res.code==1){
+                location.href="{:url('Brand/brandShow')}";
+              }
+            },
+            'json'
+        )
+      return false;
+    });
+})
+})
+})
+</script>

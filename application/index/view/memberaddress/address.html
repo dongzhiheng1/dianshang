@@ -1,0 +1,219 @@
+{include file="public/membertop"/}
+<!--End Header End--> 
+<div class="i_bg bg_color">
+    <!--Begin 用户中心 Begin -->
+	<div class="m_content">
+   		{include file="public/memberleft"}
+		<div class="m_right">
+            <p></p>
+            <div class="mem_tit" >收货地址</div> 
+      {foreach $address as $v}
+      {if condition="$v['is_default'] eq 1"}
+      {assign name="color" value="border-color:red"}
+      {else/}
+      {assign name="color" value=""}
+      {/if}
+			<div class="address" style="{$color}"> 
+              <div class="a_close"><a href="javascript:;" class="del" address_id={$v.address_id}><img src="__STATIC__/index/images//a_close.png"/></a></div>
+            	  <table border="0" class="add_t" align="center" style="width:98%; margin:10px auto;" cellspacing="0" cellpadding="0">
+                  <tr>
+                    <td align="right" width="80">收货人姓名：</td>
+                    <td>{$v.address_name}</td>
+                  </tr>
+                  <tr>
+                    <td align="right">配送区域：</td>
+                    <td>{$v.address}</td>
+                  </tr>
+                  <tr>
+                    <td align="right">详细地址：</td>
+                    <td>{$v.address_detail}</td>
+                  </tr>
+                  <tr>
+                    <td align="right">手机：</td>
+                    <td>{$v.address_tel}</td>
+                  </tr>
+                  <tr>
+                    <td align="right">最佳配送时间</td>
+                    <td>{$v.send_time}</td>
+                  </tr>
+                </table>
+                <p align="right">
+                	<a href="javascript:;" address_id={$v.address_id} class="check" style="color:#ff4e00;">设为默认</a>&nbsp; &nbsp; &nbsp; &nbsp; <a href="{:url('Memberaddress/addressUpdate')}?id={$v.address_id}" style="color:#ff4e00;">编辑</a>&nbsp; &nbsp; &nbsp; &nbsp; 
+                </p>
+            </div>
+            {/foreach}
+            <div class="mem_tit">
+            	<a href="#"><img src="__STATIC__/index/images//add_ad.gif" id="del"/></a>
+            </div>
+          <form action="">
+            <table border="0" class="add_tab" style="width:930px;"  cellspacing="0" cellpadding="0">
+              <tr>
+                <td width="135" align="right">配送地区</td>
+                <td colspan="3" style="font-family:'宋体';">
+                	<select  name="province" style="background-color:#f6f6f6;" id="province" class="area">
+                    <option value="0" selected="selected">请选择...</option>
+                    {foreach $province as $v}
+                      <option value="{$v.id}">{$v.name}</option>
+                    {/foreach}
+                  </select>
+                    <select name="city" style="background-color:#f6f6f6;" id="city" class="area">
+                      <option value="0" >请选择...</option>
+                    </select>
+                    <select name="area" style="background-color:#f6f6f6;" id="area" class="area">
+                      <option value="0">请选择...</option>
+                    </select>
+                    （必填）
+                </td>
+              </tr>
+              <tr>
+                <td align="right">收货人姓名</td>
+                <td style="font-family:'宋体';"><input type="text" id="name" name="address_name" value="" class="add_ipt" />（必填）</td>
+              </tr>
+              <tr>
+                <td align="right">详细地址</td>
+                <td style="font-family:'宋体';"><input type="text"  id="detail" name="address_detail" value="" class="add_ipt" />（必填）</td>
+              </tr>
+              <tr>
+                <td align="right">手机</td>
+                <td style="font-family:'宋体';"><input type="text" id="tel" name="address_tel" value="" class="add_ipt" />（必填）</td>
+              </tr>
+              <tr>
+                <td align="right">最佳送货时间</td>
+                <td style="font-family:'宋体';"><input type="text" id="send_time" name="send_time" value="" class="add_ipt" />（必填）</td>
+              </tr>	
+              <tr>
+                  <td colspan="4">
+                    <input type="checkbox" id="is_default">
+                    是否设置为收货地址
+                  </td>
+              </tr>	
+            </table>
+            <p align="right">
+              <!-- <input type="button" class="add_b" value="添加"> -->
+               <a href="javascript:;" class="add_b" id="btn">添加</a>
+            </p> 
+          </form>  
+        </div>
+    </div>
+    <!--End Footer End -->    
+</div>
+</body>
+<script src="__STATIC__/layui/layui.js"></script>
+<script>
+    $(function(){
+      layui.use(['layer','form'],function(){
+      var layer=layui.layer;
+      var form=layui.form;
+      //三级联动
+      $(".area").change(function(){
+            _this=$(this);
+            _this.nextAll("select").html("<option value='0' >请选择...</option>");
+            var id=_this.val();
+            $.post(
+              "{:url('Memberaddress/getArea')}",
+              {id:id},
+              function(result){
+                  var _option="<option value='0' >请选择...</option>";
+                  for(var i in result){
+                    _option+="<option value='"+result[i]['id']+"'>"+result[i]['name']+"</option>";
+                  }
+                  _this.next("select").html(_option)
+              },
+              'json'
+            )
+        })
+        //提交
+        $("#btn").click(function(){
+            var name=$("#name").val();
+            /*  if(name==""){
+                layer.msg("收货人姓名不能为空",{icon:2});
+                return false;
+            } */
+            var detail=$("#detail").val();
+            /*  if(detail==""){
+                layer.msg("详细地址不能为空",{icon:2});
+                return false;
+            } */
+            var tel=$("#tel").val();
+            /*  var reg=/^1[1-9]\d{9}$/;
+            if(tel==""){
+                layer.msg("手机号不能为空",{icon:2});
+                return false;
+            }else if(!reg.test(tel)){
+                layer.msg("请输入正确手机号",{icon:2});
+                return false;
+            } */
+            var send_time=$("#send_time").val();
+             /*  if(send_time==""){
+                layer.msg("最佳收货时间不能为空",{icon:2});
+                return false;
+            } */
+            var province=$("#province").val();
+             /* if(province==0){
+                layer.msg("省份必选",{icon:2});
+                return false;
+            } */
+            var city=$("#city").val();
+            /* if(city==0){
+                layer.msg("城市必选",{icon:2});
+                return false;
+            } */
+            var area=$("#area").val();
+             /* if(area==0){
+                layer.msg("地区必选",{icon:2});
+                return false;
+            } */
+            var is_default=$("#is_default").prop("checked");
+            //console.log(city);
+            //console.log(id);
+            $.post(
+              "{:url('Memberaddress/add')}",
+              {address_name:name,address_detail:detail,address_tel:tel,send_time:send_time,address_province:province,address_city:city,address_area:area,is_default:is_default},
+              function(result){
+                 layer.msg(result.font,{icon:result.code});
+                 if(result.code==1){
+                    location.href="{:url('Memberaddress/address')}";
+                 }
+              },
+              'json'
+            )
+            
+        })
+        //删除
+       $(".del").click(function(){
+          _this=$(this);
+          var _id=_this.attr("address_id");
+          //console.log(_id);
+          $.post(
+            "{:url('Memberaddress/del')}",
+            {id:_id},
+            function(result){
+              layer.msg(result.font,{icon:result.code});
+                if(result.code==1){
+                    _this.parents("div[class='address']").remove();
+                }
+            },
+            'json'
+          )
+       })
+       //默认地址
+       $(".check").click(function(){
+            _this=$(this);
+           var id=_this.attr("address_id");
+           $.post(
+            "{:url('Memberaddress/updateCheck')}",
+            {id:id},
+            function(res){
+              //console.log(res);
+              layer.msg(res.font,{icon:res.code});
+              if(res.code==1){
+                location.href="{:url('Memberaddress/address')}";
+              }
+            },
+            'json'
+          )
+       })
+
+      })
+  })  
+</script>

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<div style="padding:15px;width:500px;">
+    <form class="layui-form" action="" >
+        <div class="layui-form-item">
+            <label class="layui-form-label">节点名称</label>
+            <div class="layui-input-block">
+                <input type="text" name="node_name" required  alay-verify="required|checkName" placeholder="请输入名称" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">控制器名称</label>
+            <div class="layui-input-block">
+                <input type="text" name="controller_name" required  alay-verify="required" placeholder="请输入名称" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">操作名称</label>
+            <div class="layui-input-block">
+                <input type="text" name="action_name"  placeholder="请输入名称" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">是否展示</label>
+            <div class="layui-input-block">
+                <input type="radio" name="node_type" value="1" title="是"checked>
+                <input type="radio" name="node_type" value="2" title="否" >
+            </div>
+        </div>
+        <div class="layui-form-item" >
+            <label class="layui-form-label">父类</label>
+            <div class="layui-input-block">
+                <select name="pid" alay-verify="required">
+                    <option value="0">请选择</option>
+                    {foreach $nodeInfo as $k=>$v}
+                    <option value="{$v.node_id}">{$v.node_name}</option>
+                    {/foreach}
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="*">立即提交</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+    </form>
+</div>
+</body>
+</html>
+<script>
+    $(function(){
+        layui.use(['form','layer'], function(){
+            var form = layui.form;
+            var layer=layui.layer;
+           /*  //验证唯一
+            form.verify({
+                checkName:function(value,item){
+                    var font;
+                    $.ajax({
+                        url:"{:url('Node/checkName')}",
+                        method:'post',
+                        data:{node_name:value,type:1},
+                        async:false,
+                        success:function(msg){
+                            if(msg==0){
+                                font="节点已存在";
+                            }
+                        }
+                    });
+                    return font;
+                }
+            }); */
+            //监听提交
+            form.on('submit(*)', function(data){
+                $.post(
+                    "{:url('Node/nodeAdd')}",
+                    data.field,
+                    function(res){
+                        layer.msg(res.font,{icon:res.code});
+                        if(res.code==1){
+                            layer.open({
+                                type:1,
+                                content:'是否进入展示页面',
+                                btn:['是','否'],
+                                yes:function(index,layero){
+                                    location.href='{:url("Node/nodeShow")}';
+                                },
+                                btn2:function(index,layero){
+                                    location.href='{:url("Node/nodeAdd")}';
+                                }
+                            })
+                        }
+                    },
+                    'json'
+
+                )
+                return false;
+            });
+        });
+    })
+</script>
+
